@@ -1,0 +1,146 @@
+[
+  {
+    "name": "Curufin",
+    "player": "SonsOfFeanor",
+    "xp": 286,
+    "body": 1,
+    "mind": 1,
+    "spirit": 1,
+    "class": "adventurer"
+  },
+  {
+    "name": "Elendil",
+    "player": "Eru Ilúvatar",
+    "xp": 307,
+    "body": 1,
+    "mind": 3,
+    "spirit": 2,
+    "class": "adventurer"
+  },
+  {
+    "name": "Fëanor",
+    "player": "SonsOfFeanor",
+    "xp": 407,
+    "body": 1,
+    "mind": 1,
+    "spirit": 2,
+    "class": "adventurer"
+  },
+  {
+    "name": "Finrod Felagund",
+    "player": "Eru Il£vatar",
+    "xp": 144,
+    "body": 3,
+    "mind": 3,
+    "spirit": 0,
+    "class": "adventurer"
+  },
+  {
+    "name": "Galadriel",
+    "player": "Eru Ilúvatar",
+    "xp": 118,
+    "body": -1,
+    "mind": 2,
+    "spirit": 2,
+    "class": "adventurer"
+  },
+  {
+    "name": "Hellboy",
+    "player": "ComicSans",
+    "xp": 167,
+    "body": 0,
+    "mind": -1,
+    "spirit": 2,
+    "class": "adventurer"
+  },
+  {
+    "name": "Jinx",
+    "player": "IPlayLOLInClass",
+    "xp": 50,
+    "body": -1,
+    "mind": 2,
+    "spirit": 2,
+    "class": "adventurer"
+  },
+  {
+    "name": "Maedhros",
+    "player": "SonsOfFeanor",
+    "xp": 348,
+    "body": 0,
+    "mind": -1,
+    "spirit": 2,
+    "class": "adventurer"
+  },
+  {
+    "name": "Percival Fredrickstein von Musel Klossowski de Rolo III",
+    "player": "Critter9",
+    "xp": 499,
+    "body": 1,
+    "mind": -1,
+    "spirit": 1,
+    "class": "adventurer"
+  },
+  {
+    "name": "Vi",
+    "player": "IPlayLOLInClass",
+    "xp": 844,
+    "body": 0,
+    "mind": 2,
+    "spirit": -1,
+    "class": "adventurer"
+  },
+  {
+    "name": "Meme",
+    "player": "meme",
+    "xp": 300,
+    "body": 1,
+    "mind": 2,
+    "spirit": 1,
+    "class": "adventurer"
+  },
+  {
+    "name": "Matreo",
+    "player": "Mateo",
+    "xp": 900,
+    "body": 1,
+    "mind": 1,
+    "spirit": 1,
+    "class": "adventurer"
+  },
+  {
+    "name": "Mateoelmejor",
+    "player": "Eru Ilúvatar",
+    "xp": 200,
+    "body": 2,
+    "mind": 1,
+    "spirit": 0,
+    "class": "adventurer"
+  },
+  {
+    "name": "Hgf",
+    "player": "jhg",
+    "xp": 200,
+    "body": 0,
+    "mind": 1,
+    "spirit": 1,
+    "class": "adventurer"
+  },
+  {
+    "name": "Nhfgufd",
+    "player": "khgfurtyd",
+    "xp": 700,
+    "body": 1,
+    "mind": 1,
+    "spirit": 1,
+    "class": "adventurer"
+  },
+  {
+    "name": "Gdfgdf",
+    "player": "dfgdfggf",
+    "xp": 300,
+    "body": 1,
+    "mind": 1,
+    "spirit": 0,
+    "class": "adventurer"
+  }
+]
