@@ -1,6 +1,6 @@
 package Business;
 
-import Business.Characters.Adventurer;
+import Business.Characters.*;
 import Business.Characters.Character;
 import Persistance.CharacterDAO;
 
@@ -62,8 +62,38 @@ public class CharacterManager {
      * Function to throw dice of 6
      * @return random number
      */
-    private int throwD6() {
+    public int throwD6() {
         Dice dice = new Dice("D6", 6);
+        return dice.throwDice();
+    }
+
+    public int throwD10() {
+        Dice dice = new Dice("D10", 10);
+        return dice.throwDice();
+    }
+
+    public int throwD4() {
+        Dice dice = new Dice("D4", 4);
+        return dice.throwDice();
+    }
+
+    public int throwD8() {
+        Dice dice = new Dice("D8", 8);
+        return dice.throwDice();
+    }
+
+    public int throwD3() {
+        Dice dice = new Dice("D3", 3);
+        return dice.throwDice();
+    }
+
+    public int throwD12() {
+        Dice dice = new Dice("D12", 12);
+        return dice.throwDice();
+    }
+
+    public int throwD20() {
+        Dice dice = new Dice("D20", 20);
         return dice.throwDice();
     }
 
@@ -98,19 +128,47 @@ public class CharacterManager {
 
     /**
      * Function to create the character
-     * @param name name of the character
-     * @param playerName name of the player
-     * @param level level of the character
-     * @param body body stat
-     * @param mind mind stat
-     * @param spirit spirit stat
+     *
+     * @param name           name of the character
+     * @param playerName     name of the player
+     * @param level          level of the character
+     * @param body           body stat
+     * @param mind           mind stat
+     * @param spirit         spirit stat
+     * @param classCharacter
      * @throws IOException needed to read the json
      */
-    public void createCharacter(String name, String playerName, int level, int body, int mind, int spirit) throws IOException{
+    public void createCharacter(String name, String playerName, int level, int body, int mind, int spirit, String classCharacter) throws IOException{
         int xpPoints = calculateInitialLevel(level);
+        classCharacter = classCharacter.toLowerCase();
         CharacterDAO characterDAO = new CharacterDAO();
-        Adventurer adventurer = new Adventurer(name, playerName, xpPoints, mind, body, spirit, "adventurer");
-        characterDAO.addCharacterToJSON(adventurer);
+
+        switch (classCharacter) {
+            case "adventurer" -> {
+                Adventurer adventurer = new Adventurer(name, playerName, xpPoints, body, mind, spirit, classCharacter,0,0);
+                characterDAO.addCharacterToJSON(adventurer);
+            }
+            case "warrior" -> {
+                Warrior warrior = new Warrior(name, playerName, xpPoints, body, mind, spirit, classCharacter,0,0);
+                characterDAO.addCharacterToJSON(warrior);
+            }
+            case "champion" -> {
+                Champion champion = new Champion(name, playerName, xpPoints, body, mind, spirit, classCharacter,0,0);
+                characterDAO.addCharacterToJSON(champion);
+            }
+            case "wizard" -> {
+                Wizard wizard = new Wizard(name, playerName, xpPoints, body, mind, spirit, classCharacter,0,0);
+                characterDAO.addCharacterToJSON(wizard);
+            }
+            case "clergue" -> {
+                Clergue clergue = new Clergue(name, playerName, xpPoints, body, mind, spirit, classCharacter,0,0);
+                characterDAO.addCharacterToJSON(clergue);
+            }
+            case "paladin" -> {
+                Paladin paladin = new Paladin(name, playerName, xpPoints, body, mind, spirit, classCharacter,0,0);
+                characterDAO.addCharacterToJSON(paladin);
+            }
+        }
     }
 
     /**
@@ -186,21 +244,61 @@ public class CharacterManager {
 
     /**
      * Function to calculate the damage of the character
+     *
      * @param attacker character
+     * @param b
      * @return damage
      */
-    public int calculateAttack(Character attacker) {
-
-        return throwD6() + attacker.getBody();
+    public int calculateAttack(Character attacker, Party party, boolean b) {
+        return attacker.specificAttack(this,attacker,party,b);
     }
 
-    /**
-     * Function to calculate the 'curacio' made from the character
-     * @param mind mind stat
-     * @return curacio
-     */
-    public int makeCuracio(int mind) {
-        Dice dice = new Dice("d8",8);
-        return dice.throwDice() + mind;
+    public String getClassName(int level, String classType) {
+        String className = "";
+        if(classType.equals("Adventurer")){
+            if(level >= 4 && level <= 7){
+                className = "Warrior";
+            } else if(level >= 8){
+                className = "Champion";
+            } else{
+                className = classType;
+            }
+        } else if(classType.equals("Cleric")){
+            if(level >= 5){
+                className = "Paladin";
+            }
+            else {
+                className = "Clergue";
+            }
+        } else{
+            className = classType;
+        }
+        return className;
     }
+
+    public Character getSpecificCharacter(Character character){
+        switch(character.getTipusPersonatge()){
+            case "adventurer" -> {
+                return new Adventurer(character);
+            }
+            case "warrior" -> {
+                return new Warrior(character);
+            }
+            case "champion" -> {
+                return new Champion(character);
+            }
+            case "clergue" -> {
+                return new Clergue(character);
+            }
+            case "paladin" -> {
+                return new Paladin(character);
+            }
+            default -> {
+                return new Wizard(character);
+            }
+        }
+    }
+
+
+
 }

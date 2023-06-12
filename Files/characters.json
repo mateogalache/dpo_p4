@@ -142,5 +142,41 @@
     "mind": 1,
     "spirit": 0,
     "class": "adventurer"
+  },
+  {
+    "name": "Mateoboos",
+    "player": "mateoking",
+    "xp": 600,
+    "body": 0,
+    "mind": 1,
+    "spirit": 1,
+    "class": "paladin"
+  },
+  {
+    "name": "Mateohechizero",
+    "player": "mateoking",
+    "xp": 500,
+    "body": 2,
+    "mind": 0,
+    "spirit": 1,
+    "class": "wizard"
+  },
+  {
+    "name": "Mateopaladin",
+    "player": "mateoking",
+    "xp": 600,
+    "body": 1,
+    "mind": 2,
+    "spirit": 0,
+    "class": "paladin"
+  },
+  {
+    "name": "Mateoclergue",
+    "player": "mateoking",
+    "xp": 200,
+    "body": 2,
+    "mind": 0,
+    "spirit": 1,
+    "class": "clergue"
   }
 ]

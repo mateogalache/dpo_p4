@@ -148,11 +148,13 @@ public class CombatManager {
 
     /**
      * Function to calculate the initiative value of the adventurer
-     * @param spirit spirit stat
+     *
+     * @param spirit           spirit stat
+     * @param characterManager
      * @return initiative value
      */
-    public Integer calculateIniative(int spirit) {
-        return throwd12() + spirit;
+    public int calculateIniative(Character character, CharacterManager characterManager) {
+        return characterManager.getSpecificCharacter(character).specificInitiative(characterManager,character);
     }
 
     /**
@@ -208,14 +210,16 @@ public class CombatManager {
 
     /**
      * Function to order ALL the participants of the combat depending on initiative
-     * @param party party of the adventure
-     * @param combat the combat
+     *
+     * @param party            party of the adventure
+     * @param combat           the combat
+     * @param characterManager
      */
-    public void orderAllParticipants(Party party, Combat combat) {
+    public void orderAllParticipants(Party party, Combat combat, CharacterManager characterManager) {
         allInitiatives = new ArrayList<>();
         allParticipants = new ArrayList<>();
         for(int j=0;j<party.getPersonatges().length;j++){
-            allInitiatives.add(calculateIniative(party.getPersonatges()[j].getSpirit()));
+            allInitiatives.add(calculateIniative(party.getPersonatges()[j],characterManager));
         }
         for(Character character: party.getPersonatges()){
             allParticipants.add(character.getNomPersonatge());
@@ -348,7 +352,7 @@ public class CombatManager {
      * @param actualLifeMonsters actual life of each monster
      * @return index of the monster to be attacked
      */
-    public int monsterToBeAttacked(List<Integer> actualLifeMonsters) {
+    public int monsterToBeAttackedMoreLife(List<Integer> actualLifeMonsters) {
         int life=0,index=0;
         for(int i=0;i<actualLifeMonsters.size();i++){
             if(actualLifeMonsters.get(i) > life){
@@ -358,4 +362,52 @@ public class CombatManager {
         }
         return index;
     }
+
+    public boolean moreThan3Monsters(List<Integer> actualLifeMonsters){
+       int counter = 0;
+        for(int i=0;i<actualLifeMonsters.size();i++){
+            if(actualLifeMonsters.get(i) > 0){
+                counter++;
+            }
+        }
+        return counter >= 3;
+    }
+
+    public int monsterToBeAttackedRandom(List<Integer> actualLifeMonsters) {
+        int indexMonsterToAttack;
+        do{
+            indexMonsterToAttack = randomAttack(actualLifeMonsters.size()) - 1;
+        }while (actualLifeMonsters.get(indexMonsterToAttack) <= 0);
+        return indexMonsterToAttack;
+    }
+
+    public Character setHabiliitiesCharacters(Character character, CharacterManager characterManager, Party party) throws IOException {
+        character = characterManager.getSpecificCharacter(character);
+        character.specificPreparation(character,party,characterManager);
+        return character;
+    }
+
+    public Character setTotalLifePoints(CharacterManager characterManager, Party party,Character character) {
+        character.setTotalLifePoints(characterManager.getSpecificCharacter(character).specificLifePoints(character,characterManager));
+        character.setActualLifePoints(characterManager.getSpecificCharacter(character).specificLifePoints(character,characterManager));
+        return character;
+    }
+
+    public Party makeRestStage(CharacterManager characterManager, Character character,Party party,int m) {
+        int heal = characterManager.getSpecificCharacter(character).specificRestStage(character,characterManager);
+        if(Objects.equals(character.getTipusPersonatge(), "paladin")){
+            System.out.println("gfdgd" + heal);
+            character.setValueRestStage(heal);
+            for(int i = 0;i<party.getPersonatges().length;i++){
+                party.getPersonatges()[i].setActualLifePoints(party.getPersonatges()[i].getActualLifePoints() + heal);
+            }
+        }else{
+            character.setValueRestStage(heal);
+            party.getPersonatges()[m].setActualLifePoints(party.getPersonatges()[m].getActualLifePoints() + heal);
+
+        }
+
+        return party;
+    }
+
 }

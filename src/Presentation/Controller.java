@@ -84,7 +84,10 @@ public class Controller {
                     int spirit = spiritValues[2];
 
                     menu.listStats(body, mind, spirit);
-                    characterManager.createCharacter(name, playerName, level, body, mind, spirit);
+
+                    String classCharacter = menu.askClassCharacter();
+                    classCharacter = characterManager.getClassName(level,classCharacter);
+                    characterManager.createCharacter(name, playerName, level, body, mind, spirit,classCharacter);
                     menu.characterCreated(name);
                 }
                 menu.nextLine();
@@ -169,6 +172,7 @@ public class Controller {
         }
     }
 
+
     /**
      * Function that plays the adventure
      * @param adventure class adventure where we have information about it
@@ -180,17 +184,17 @@ public class Controller {
         CombatManager combatManager = new CombatManager();
         Party party = adventureManager.getParty();
         for(int j=0;j<party.getPersonatges().length;j++) {
-            party.getPersonatges()[j].setTotalLifePoints((10 + party.getPersonatges()[j].getBody()) * party.getPersonatges()[j].getNivellInicial());
-            party.getPersonatges()[j].setActualLifePoints((10 + party.getPersonatges()[j].getBody()) * party.getPersonatges()[j].getNivellInicial());
+            party.getPersonatges()[j] = combatManager.setTotalLifePoints(characterManager,party,party.getPersonatges()[j]);
         }
         for(int i=0;i<adventure.getCombats().size();i++){
             mDead = false;
-            combatManager.orderAllParticipants(party, adventure.getCombats().get(i));
+            combatManager.orderAllParticipants(party, adventure.getCombats().get(i),characterManager);
             menu.titleEncounter(i,adventure.getCombats().get(i).getMonsters(),adventure.getCombats().get(i).getMonstersQuantity());
             menu.titlePreparation();
-            menu.showPreparation(party.gethabilities(),adventureManager.getParty().getPersonatges());
+
             for(int j=0;j<party.getPersonatges().length;j++){
-                party.getPersonatges()[j].setSpirit(party.getPersonatges()[j].getSpirit()+1);
+                party.getPersonatges()[j] = combatManager.setHabiliitiesCharacters(party.getPersonatges()[j],characterManager,party);
+                menu.showPreparation(party.getPersonatges()[j]);
             }
             combatManager.orderMonsters(adventure.getCombats().get(i));
             menu.showOrder(combatManager.getAllParticipants(),combatManager.getAllInitiatives());
@@ -199,12 +203,17 @@ public class Controller {
             while(!mDead && !cDead){
                 round++;
                 menu.showRound(round);
-                menu.showPartyPoints(party);
+                for(int j = 0;j<party.getPersonatges().length;j++){
+                    menu.showPartyPoints(party.getPersonatges()[j]);
+                }
+                menu.nextLine();
                 int monsterIndex = 0;
                 for(int j=0;j<combatManager.getAllParticipants().size();j++){
+
                     int mult = combatManager.calculateMultiplier();
                     if(isCharacter(party.getPersonatges(),combatManager.getAllParticipants(),j)){
                         Character attacker = characterManager.getCharacterFromIndex(combatManager.getAllParticipants().get(j));
+                        attacker = characterManager.getSpecificCharacter(attacker);
                         attackCharacter(attacker,combatManager,characterManager,party, mult);
                         if(monstersDead(combatManager.getActualLifeMonsters())){
                             mDead = true;
@@ -212,6 +221,7 @@ public class Controller {
                         }
                     }else{
                         attackMonster(combatManager, party,monsterIndex,mult,j);
+                        monsterIndex++;
                         if(charactersDead(party)){
                             cDead  = true;
                             break;
@@ -224,7 +234,7 @@ public class Controller {
                 break;
             }
             menu.restStageTitle();
-            restStage(adventure,party,characterManager,i);
+            restStage(adventure,party,characterManager,i,combatManager);
         }
         menu.lastMessage(cDead,mDead,adventure.getName());
     }
@@ -236,7 +246,7 @@ public class Controller {
      * @param characterManager manager of the characters
      * @param i int to know in what combat/encounter we are,
      */
-    private void restStage(Adventure adventure, Party party,CharacterManager characterManager,int i) {
+    private void restStage(Adventure adventure, Party party,CharacterManager characterManager,int i,CombatManager combatManager) {
         int numberXp = 0;
         for(int j = 0;j<adventure.getCombats().get(i).getMonsters().size();j++){
             numberXp = numberXp + (adventure.getCombats().get(i).getMonsters().get(j).getExperience() * adventure.getCombats().get(i).getMonstersQuantity()[j]);
@@ -249,11 +259,12 @@ public class Controller {
             menu.gainXp(numberXp,character,levelUp);
         }
         menu.nextLine();
-        for(Character character: party.getPersonatges()){
+        for(int m = 0;m< party.getPersonatges().length;m++){
+            Character character = party.getPersonatges()[m];
             if (character.getActualLifePoints() > 0){
-                int curacio = characterManager.makeCuracio(character.getMind());
-                character.setActualLifePoints(character.getActualLifePoints() + curacio);
-                menu.makeCuracio(curacio,character.getNomPersonatge());
+                party = combatManager.makeRestStage(characterManager,character,party,m);
+                System.out.println("fsdfs " + characterManager.getSpecificCharacter(party.getPersonatges()[m]).valueRestStage());
+                menu.makeCuracio(character,party,characterManager.getSpecificCharacter(party.getPersonatges()[m]).valueRestStage());
             }else{
                 menu.makeCuracioDead(character.getNomPersonatge());
             }
@@ -278,7 +289,11 @@ public class Controller {
             do{
                 indexOpponent = combatManager.randomAttack(party.getPersonatges().length) - 1;
             }while(party.getPersonatges()[indexOpponent].getActualLifePoints() == 0);
-            party.getPersonatges()[indexOpponent].setActualLifePoints(party.getPersonatges()[indexOpponent].getActualLifePoints()- damageAttack);
+            if(party.getPersonatges()[indexOpponent].getShield() > 0){
+                party.getPersonatges()[indexOpponent].setShield(party.getPersonatges()[indexOpponent].getShield() - damageAttack);
+            }else{
+                party.getPersonatges()[indexOpponent].setActualLifePoints(party.getPersonatges()[indexOpponent].getActualLifePoints()- damageAttack);
+            }
             menu.makeAttackMonster(attacker, damageAttack,party.getPersonatges()[indexOpponent].getNomPersonatge(),mult,attacker.getDamageType());
             if(party.getPersonatges()[indexOpponent].getActualLifePoints() <= 0){
                 party.getPersonatges()[indexOpponent].setActualLifePoints(0);
@@ -297,13 +312,72 @@ public class Controller {
      */
     private void attackCharacter(Character attacker, CombatManager combatManager, CharacterManager characterManager, Party party, int mult) {
         if(combatManager.getActualLife(party,attacker) > 0){
-            int damageAttack = characterManager.calculateAttack(attacker) * mult;
-            int indexOpponent = combatManager.monsterToBeAttacked(combatManager.getActualLifeMonsters());
-            combatManager.getActualLifeMonsters().set(indexOpponent,combatManager.getActualLifeMonsters().get(indexOpponent)- damageAttack);
-            menu.makeAttack(attacker, damageAttack,combatManager.getOnlyMonsters().get(indexOpponent),mult);
-            if(combatManager.getActualLifeMonsters().get(indexOpponent) <= 0){
-                menu.dieMonster(combatManager.getOnlyMonsters().get(indexOpponent));
+            int damageAttack = characterManager.calculateAttack(attacker,party,combatManager.moreThan3Monsters(combatManager.getActualLifeMonsters())) * mult;
+            String typeAttack = attacker.typeSpecificAttack();
+            int indexOpponent;
+            switch(typeAttack){
+                case "attackOneRandom" -> {
+                    indexOpponent = combatManager.monsterToBeAttackedRandom(combatManager.getActualLifeMonsters());
+                    attackOneMonster(indexOpponent,combatManager,damageAttack,attacker,mult);
+                }
+                case "attackOneSpecific" -> {
+                    indexOpponent = combatManager.monsterToBeAttackedMoreLife(combatManager.getActualLifeMonsters());
+                    attackOneMonster(indexOpponent,combatManager,damageAttack,attacker,mult);
+
+                }
+                case "healOne" -> healOneCharacter(party,damageAttack,mult,attacker);
+                case "healAll" -> healAllCharacter(party,damageAttack,mult,attacker);
+                default -> attackAll(combatManager.getActualLifeMonsters(),damageAttack,combatManager.getOnlyMonsters(),attacker,mult);
             }
+        }
+    }
+
+    private void attackAll(List<Integer> actualLifeMonsters, int damageAttack, List<String> onlyMonsters,Character attacker,int mult) {
+        List<String> monstersDead = new ArrayList<>();
+        List<String> monstersAttacked = new ArrayList<>();
+        boolean dead = false;
+        for (int i = 0; i < actualLifeMonsters.size();i++){
+            if(actualLifeMonsters.get(i) > 0){
+                actualLifeMonsters.set(i,actualLifeMonsters.get(i) - damageAttack);
+                monstersAttacked.add(onlyMonsters.get(i));
+                if(actualLifeMonsters.get(i) <= 0){
+                    monstersDead.add(onlyMonsters.get(i));
+                    dead = true;
+                }
+            }
+        }
+        menu.attackAll(monstersAttacked,damageAttack,attacker,mult);
+        if(dead){
+            menu.monstersDead(monstersDead);
+        }
+
+    }
+
+    private void healAllCharacter(Party party, int damageAttack,int mult,Character attacker) {
+        for (int i = 0;i<party.getPersonatges().length;i++){
+            party.getPersonatges()[i].setActualLifePoints(party.getPersonatges()[i].getActualLifePoints() + damageAttack);
+        }
+        menu.healAll(party,attacker,damageAttack);
+    }
+
+    private void healOneCharacter(Party party, int damageAttack, int mult, Character attacker) {
+        Character characterHealed = null;
+        for (int i=0;i<party.getPersonatges().length;i++){
+           if(party.getPersonatges()[i].getActualLifePoints() < party.getPersonatges()[i].getTotalLifePoints()/2){
+               party.getPersonatges()[i].setActualLifePoints(party.getPersonatges()[i].getActualLifePoints() + damageAttack);
+               characterHealed = party.getPersonatges()[i];
+               break;
+           }
+        }
+        assert characterHealed != null;
+        menu.healOne(characterHealed.getNomPersonatge(),attacker,damageAttack);
+    }
+
+    private void attackOneMonster(int indexOpponent, CombatManager combatManager, int damageAttack, Character attacker, int mult) {
+        combatManager.getActualLifeMonsters().set(indexOpponent,combatManager.getActualLifeMonsters().get(indexOpponent) - damageAttack);
+        menu.makeAttack(attacker, damageAttack,combatManager.getOnlyMonsters().get(indexOpponent),mult);
+        if(combatManager.getActualLifeMonsters().get(indexOpponent) <= 0){
+            menu.dieMonster(combatManager.getOnlyMonsters().get(indexOpponent));
         }
     }
 

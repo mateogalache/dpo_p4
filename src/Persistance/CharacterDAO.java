@@ -2,6 +2,7 @@ package Persistance;
 
 import Business.Characters.Adventurer;
 import Business.Characters.Character;
+import Business.Characters.NewCharacter;
 import com.google.gson.*;
 
 import java.io.FileNotFoundException;
@@ -55,7 +56,7 @@ public class CharacterDAO {
         int spirit = characterObject.get("spirit").getAsInt();
         String type = characterObject.get("class").getAsString().toLowerCase();
 
-        return new Adventurer(name,player,xp,mind,body,spirit,type);
+        return new NewCharacter(name,player,xp,mind,body,spirit,type,0,0);
     }
 
     /**

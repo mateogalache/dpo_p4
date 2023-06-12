@@ -1,7 +1,10 @@
 package Business.Characters;
 
-import com.google.gson.annotations.Expose;
+import Business.CharacterManager;
+import Business.Party;
 import com.google.gson.annotations.SerializedName;
+
+import java.io.IOException;
 
 public abstract class Character {
 
@@ -28,7 +31,7 @@ public abstract class Character {
      * @param spirit spirit stat
      * @param tipusPersonatge character class
      */
-    public Character(String nomPersonatge, String nomJugador, int xpPoints, int mind, int body, int spirit, String tipusPersonatge) {
+    public Character(String nomPersonatge, String nomJugador, int xpPoints, int mind, int body, int spirit, String tipusPersonatge,int actualLifePoints, int totalLifePoints) {
         this.nomPersonatge = nomPersonatge;
         this.nomJugador = nomJugador;
         this.xpPoints = xpPoints;
@@ -36,6 +39,8 @@ public abstract class Character {
         this.body = body;
         this.spirit = spirit;
         this.tipusPersonatge = tipusPersonatge;
+        this.actualLifePoints = actualLifePoints;
+        this.totalLifePoints = totalLifePoints;
     }
 
     /**
@@ -188,5 +193,35 @@ public abstract class Character {
      * @return string of the preparation action
      */
     public abstract String preparationAction();
+
+    public abstract int specificAttack(CharacterManager characterManager, Character attacker, Party party, boolean b);
+
+    public abstract void specificPreparation(Character character, Party party, CharacterManager characterManager) throws IOException;
+
+    public abstract int getShield();
+
+    public abstract void setShield(int shield0);
+
+    public abstract int specificRestStage(Character character,CharacterManager characterManager);
+
+    public abstract String restStageAction();
+
+    public abstract String specificPassive();
+
+    public abstract boolean hasPassive();
+
+    public abstract String typeSpecificAttack();
+
+    public abstract String typeOfDamage();
+
+    public abstract String attackAction();
+
+    public abstract int specificInitiative(CharacterManager characterManager, Character character);
+
+    public abstract int specificLifePoints(Character character, CharacterManager characterManager);
+
+    public abstract int valueRestStage();
+
+    public abstract void setValueRestStage(int heal);
 
 }

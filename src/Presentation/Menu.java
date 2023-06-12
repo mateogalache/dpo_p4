@@ -4,9 +4,7 @@ import Business.Characters.Character;
 import Business.Monster;
 import Business.Party;
 
-import java.util.InputMismatchException;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 import static java.lang.Boolean.FALSE;
 
@@ -552,10 +550,8 @@ public class Menu {
         System.out.println("-------------------------");
     }
 
-    public void showPreparation(List<String> gethabilities, Character[] personatges) {
-        for(int i=0;i<personatges.length;i++){
-            System.out.println(personatges[i].getNomPersonatge() + gethabilities.get(i));
-        }
+    public void showPreparation(Character character) {
+        System.out.println(character.getNomPersonatge() + character.preparationAction());
     }
 
     public void showOrder(List<String> allParticipants, List<Integer> allInitiatives) {
@@ -571,24 +567,24 @@ public class Menu {
         System.out.println("--------------------");
     }
 
-    public void showPartyPoints(Party party) {
-        Character[] charactersParty = party.getPersonatges();
-        for(Character character : charactersParty){
+    public void showPartyPoints(Character character) {
+        if(character.getShield() > 0){
+            System.out.println("\t- "+character.getNomPersonatge() + "     " + character.getActualLifePoints() + " / " + character.getTotalLifePoints() + " hit points (Shield: " + character.getShield() + ")");
+        }else{
             System.out.println("\t- "+character.getNomPersonatge() + "     " + character.getActualLifePoints() + " / " + character.getTotalLifePoints() + " hit points");
         }
-        nextLine();
     }
 
     public void makeAttack(Character attacker, int damageAttack, String opponent, int mult) {
         if(mult==0){
-            System.out.println("\n" + attacker.getNomPersonatge() + " attacks " + opponent + " with Sword slash.");
-            System.out.println("Fails and deals " + damageAttack + " physical damage.");
+            System.out.println("\n" + attacker.getNomPersonatge() + " attacks " + opponent + " with " + attacker.attackAction() + ".");
+            System.out.println("Fails and deals " + damageAttack + " " + attacker.typeOfDamage() + " damage.");
         }else if(mult==2){
-            System.out.println("\n" + attacker.getNomPersonatge() + " attacks " + opponent + " with Sword slash.");
-            System.out.println("Critical hit and deals " + damageAttack + " physical damage.");
+            System.out.println("\n" + attacker.getNomPersonatge() + " attacks " + opponent + " with " + attacker.attackAction() + ".");
+            System.out.println("Critical hit and deals " + damageAttack + " " + attacker.typeOfDamage() + " damage.");
         }else{
-            System.out.println("\n" + attacker.getNomPersonatge() + " attacks " + opponent + " with Sword slash.");
-            System.out.println("Hits and deals " + damageAttack + " physical damage.");
+            System.out.println("\n" + attacker.getNomPersonatge() + " attacks " + opponent + " with " + attacker.attackAction() + ".");
+            System.out.println("Hits and deals " + damageAttack + " " + attacker.typeOfDamage() + " damage.");
         }
 
     }
@@ -650,8 +646,20 @@ public class Menu {
 
     }
 
-    public void makeCuracio(int makeCuracio, String nomPersonatge) {
-        System.out.println(nomPersonatge + " uses Bandage time. Heals " + makeCuracio + " hit points.");
+    public void makeCuracio(Character character, Party party, int rest) {
+        if (Objects.equals(character.getTipusPersonatge(), "paladin")){
+            List<String> listParty = new ArrayList<>();
+            for(int i = 0;i<party.getPersonatges().length;i++){
+                listParty.add(party.getPersonatges()[i].getNomPersonatge());
+            }
+            System.out.println(character.getNomPersonatge() + " uses " +  character.restStageAction()  + ". Heals " + listToString(listParty) + " " + rest + " hit points.");
+        }else if (Objects.equals(character.getTipusPersonatge(), "wizard")){
+            System.out.println(character.getNomPersonatge() + " is reading a book.");
+        }else{
+            System.out.println(character.getNomPersonatge() + " uses " +  character.restStageAction()  + ". Heals " + rest + " hit points.");
+
+        }
+
     }
 
     public void makeCuracioDead(String nomPersonatge) {
@@ -675,5 +683,68 @@ public class Menu {
 
     public void alreadyBoss() {
         System.out.println("There's already a boss in the combat.");
+
+    }
+    public String askClassCharacter(){
+        Scanner scanner = new Scanner(System.in);
+        String className;
+        System.out.print("-> Enter the character's initial class [Adventurer, Cleric, Wizard]: ");
+        try{
+            className = toCorrectFormat(scanner.nextLine());
+            if (!className.equals("Adventurer") && !className.equals("Cleric") && !className.equals("Wizard")){
+                System.out.println("Please, provide a correct format for name");
+                className = askClassCharacter();
+            }
+        } catch (InputMismatchException exception){
+            System.out.println("Please, provide a correct format for name");
+            className = askClassCharacter();
+        }
+        return className;
+    }
+
+    public void attackAll(List<String> onlyMonsters, int damageAttack, Character attacker, int mult) {
+        String monsters = listToString(onlyMonsters);
+        if(mult==0){
+            System.out.println("\n" + attacker.getNomPersonatge() + " attacks " + monsters + " with " + attacker.attackAction()  + " .");
+            System.out.println("Fails and deals " + damageAttack + " " + attacker.typeOfDamage() + " damage.");
+        }else if(mult==2){
+            System.out.println("\n" + attacker.getNomPersonatge() + " attacks " + monsters + " with " + attacker.attackAction()  + " .");
+            System.out.println("Critical hit and deals " + damageAttack + " " + attacker.typeOfDamage() + " damage.");
+        }else{
+            System.out.println("\n" + attacker.getNomPersonatge() + " attacks " + monsters + " with " + attacker.attackAction()  + " .");
+            System.out.println("Hits and deals " + damageAttack + " " + attacker.typeOfDamage() + " damage.");
+        }
+    }
+
+    private String listToString(List<String> stringList){
+        String result = stringList.get(0);
+
+        for (int i = 1; i < stringList.size() - 1; i++) {
+            result += ", " + stringList.get(i);
+        }
+
+        if (stringList.size() > 1) {
+            result += " and " + stringList.get(stringList.size() - 1);
+        }
+
+        return result;
+    }
+
+    public void monstersDead(List<String> monstersDead) {
+        String s = listToString(monstersDead);
+        System.out.println(s + " dies.");
+    }
+
+    public void healAll(Party party,Character attacker,int attackDamage) {
+        List<String> partyNames = new ArrayList<>();
+        for(int i = 0;i<party.getPersonatges().length;i++){
+            partyNames.add(party.getPersonatges()[i].getNomPersonatge());
+        }
+        String namesString = listToString(partyNames);
+        System.out.println(attacker.getNomPersonatge() + " uses " + attacker.attackAction() + " . Heals " + attackDamage + " hit points to " + namesString + ".");
+    }
+
+    public void healOne(String nomPersonatge, Character attacker, int attackDamage) {
+        System.out.println(attacker.getNomPersonatge() + " uses " + attacker.attackAction() + " . Heals " + attackDamage + " hit points to " + nomPersonatge + ".");
     }
 }
