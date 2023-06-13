@@ -1,6 +1,7 @@
 package Business.Characters;
 
 import Business.CharacterManager;
+import Business.Monster;
 import Business.Party;
 import com.google.gson.annotations.SerializedName;
 
@@ -206,7 +207,7 @@ public abstract class Character {
 
     public abstract String restStageAction();
 
-    public abstract String specificPassive();
+    public abstract int specificPassive(int damageAttack, Character character, Monster attacker);
 
     public abstract boolean hasPassive();
 

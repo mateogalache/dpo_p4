@@ -290,7 +290,7 @@ public class Controller {
             if(combatManager.isBoss(attacker)){
                 List<String> characterDead = new ArrayList<>();
                 for (Character character : party.getPersonatges()){
-                    character.setActualLifePoints(character.getActualLifePoints() - damageAttack);
+                    character.setActualLifePoints(character.getActualLifePoints() - combatManager.getDamagePassive(damageAttack,attacker,character));
                     if(character.getActualLifePoints() <= 0){
                         character.setActualLifePoints(0);
                         characterDead.add(character.getNomPersonatge());
@@ -305,9 +305,9 @@ public class Controller {
                     indexOpponent = combatManager.randomAttack(party.getPersonatges().length) - 1;
                 }while(party.getPersonatges()[indexOpponent].getActualLifePoints() == 0);
                 if(party.getPersonatges()[indexOpponent].getShield() > 0){
-                    party.getPersonatges()[indexOpponent].setShield(party.getPersonatges()[indexOpponent].getShield() - damageAttack);
+                    party.getPersonatges()[indexOpponent].setShield(party.getPersonatges()[indexOpponent].getShield() - combatManager.getDamagePassive(damageAttack,attacker,party.getPersonatges()[indexOpponent]));
                 }else{
-                    party.getPersonatges()[indexOpponent].setActualLifePoints(party.getPersonatges()[indexOpponent].getActualLifePoints()- damageAttack);
+                    party.getPersonatges()[indexOpponent].setActualLifePoints(party.getPersonatges()[indexOpponent].getActualLifePoints()- combatManager.getDamagePassive(damageAttack,attacker,party.getPersonatges()[indexOpponent]));
                 }
                 menu.makeAttackMonster(attacker, damageAttack,party.getPersonatges()[indexOpponent].getNomPersonatge(),mult,attacker.getDamageType());
                 if(party.getPersonatges()[indexOpponent].getActualLifePoints() <= 0){

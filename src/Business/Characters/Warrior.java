@@ -1,11 +1,12 @@
 package Business.Characters;
 
 import Business.CharacterManager;
+import Business.Monster;
 import Business.Party;
 
 public class Warrior extends Character{
     private transient String attacktType;
-    private transient String typeOfDamage;
+    private transient String typeOfDamage = "Physical";
 
     private transient String attackAction;
     private transient int valueRest;
@@ -39,7 +40,6 @@ public class Warrior extends Character{
     @Override
     public int specificAttack(CharacterManager characterManager, Character attacker, Party party, boolean b) {
         attacktType = "attackOneSpecific";
-        typeOfDamage = "physical";
         attackAction = "Improved sword slash";
         return characterManager.throwD10() + attacker.getBody();
     }
@@ -70,8 +70,12 @@ public class Warrior extends Character{
     }
 
     @Override
-    public String specificPassive() {
-        return null;
+    public int specificPassive(int damageAttack, Character character, Monster attacker) {
+        if(attacker.getDamageType().equals(typeOfDamage)){
+            return damageAttack / 2;
+        }else{
+            return damageAttack;
+        }
     }
 
     @Override

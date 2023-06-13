@@ -578,13 +578,13 @@ public class Menu {
     public void makeAttack(Character attacker, int damageAttack, String opponent, int mult) {
         if(mult==0){
             System.out.println("\n" + attacker.getNomPersonatge() + " attacks " + opponent + " with " + attacker.attackAction() + ".");
-            System.out.println("Fails and deals " + damageAttack + " " + attacker.typeOfDamage() + " damage.");
+            System.out.println("Fails and deals " + damageAttack + " " + attacker.typeOfDamage().toLowerCase() + " damage.");
         }else if(mult==2){
             System.out.println("\n" + attacker.getNomPersonatge() + " attacks " + opponent + " with " + attacker.attackAction() + ".");
-            System.out.println("Critical hit and deals " + damageAttack + " " + attacker.typeOfDamage() + " damage.");
+            System.out.println("Critical hit and deals " + damageAttack + " " + attacker.typeOfDamage().toLowerCase() + " damage.");
         }else{
             System.out.println("\n" + attacker.getNomPersonatge() + " attacks " + opponent + " with " + attacker.attackAction() + ".");
-            System.out.println("Hits and deals " + damageAttack + " " + attacker.typeOfDamage() + " damage.");
+            System.out.println("Hits and deals " + damageAttack + " " + attacker.typeOfDamage().toLowerCase() + " damage.");
         }
 
     }
@@ -726,13 +726,13 @@ public class Menu {
         String monsters = listToString(onlyMonsters);
         if(mult==0){
             System.out.println("\n" + attacker.getNomPersonatge() + " attacks " + monsters + " with " + attacker.attackAction()  + " .");
-            System.out.println("Fails and deals " + damageAttack + " " + attacker.typeOfDamage() + " damage.");
+            System.out.println("Fails and deals " + damageAttack + " " + attacker.typeOfDamage().toLowerCase() + " damage.");
         }else if(mult==2){
             System.out.println("\n" + attacker.getNomPersonatge() + " attacks " + monsters + " with " + attacker.attackAction()  + " .");
-            System.out.println("Critical hit and deals " + damageAttack + " " + attacker.typeOfDamage() + " damage.");
+            System.out.println("Critical hit and deals " + damageAttack + " " + attacker.typeOfDamage().toLowerCase() + " damage.");
         }else{
             System.out.println("\n" + attacker.getNomPersonatge() + " attacks " + monsters + " with " + attacker.attackAction()  + " .");
-            System.out.println("Hits and deals " + damageAttack + " " + attacker.typeOfDamage() + " damage.");
+            System.out.println("Hits and deals " + damageAttack + " " + attacker.typeOfDamage().toLowerCase() + " damage.");
         }
     }
 

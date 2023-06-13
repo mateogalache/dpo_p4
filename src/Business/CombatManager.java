@@ -414,4 +414,13 @@ public class CombatManager {
     public boolean isBoss(Monster attacker) {
         return attacker.getChallenge().equals("Boss");
     }
+
+    public int getDamagePassive(int damageAttack, Monster attacker, Character character) {
+        if(character.hasPassive()){
+            return character.specificPassive(damageAttack,character,attacker);
+        }else{
+            return damageAttack;
+        }
+
+    }
 }

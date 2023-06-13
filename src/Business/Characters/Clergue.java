@@ -1,6 +1,7 @@
 package Business.Characters;
 
 import Business.CharacterManager;
+import Business.Monster;
 import Business.Party;
 
 public class Clergue extends Character{
@@ -91,8 +92,8 @@ public class Clergue extends Character{
     }
 
     @Override
-    public String specificPassive() {
-        return null;
+    public int specificPassive(int damageAttack, Character character, Monster attacker) {
+        return damageAttack;
     }
 
     @Override

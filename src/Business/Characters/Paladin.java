@@ -1,11 +1,12 @@
 package Business.Characters;
 
 import Business.CharacterManager;
+import Business.Monster;
 import Business.Party;
 
 public class Paladin extends Character{
     private transient String attacktType;
-    private transient String typeOfDamage;
+    private transient String typeOfDamage = "Psychical";
 
     private transient String attackAction;
     private transient int newMind;
@@ -53,7 +54,6 @@ public class Paladin extends Character{
             return characterManager.throwD10() + attacker.getMind();
         }else{
             attacktType = "attackOneRandom";
-            typeOfDamage = "psychical";
             attackAction = "Never on my watch";
             return characterManager.throwD8() + attacker.getSpirit();
         }
@@ -89,13 +89,18 @@ public class Paladin extends Character{
     }
 
     @Override
-    public String specificPassive() {
-        return null;
+    public int specificPassive(int damageAttack, Character character, Monster attacker) {
+        if(attacker.getDamageType().equals(typeOfDamage)){
+
+            return damageAttack / 2;
+        }else{
+            return damageAttack;
+        }
     }
 
     @Override
     public boolean hasPassive() {
-        return false;
+        return true;
     }
 
     @Override

@@ -1,11 +1,12 @@
 package Business.Characters;
 
 import Business.CharacterManager;
+import Business.Monster;
 import Business.Party;
 
 public class Wizard extends Character{
     private transient String attacktType;
-    private transient String typeOfDamage;
+    private transient String typeOfDamage = "Magical";
 
     private transient String attackAction;
     private transient int shield;
@@ -42,13 +43,13 @@ public class Wizard extends Character{
     public int specificAttack(CharacterManager characterManager, Character attacker, Party party, boolean area) {
         if(area){
             attacktType = "attackAll";
-            typeOfDamage = "magical";
+
             attackAction = "Fireball";
             return characterManager.throwD4() + attacker.getMind();
         }else{
             attacktType = "attackOneSpecific";
             attackAction = "Arcane missile";
-            typeOfDamage = "magical";
+
             return characterManager.throwD6() + attacker.getMind();
         }
     }
@@ -82,8 +83,12 @@ public class Wizard extends Character{
     }
 
     @Override
-    public String specificPassive() {
-        return null;
+    public int specificPassive(int damageAttack, Character character, Monster attacker) {
+        if(attacker.getDamageType().equals(typeOfDamage)){
+            return damageAttack - (character.getXpPoints()/100 - 1);
+        }else{
+            return damageAttack;
+        }
     }
 
     @Override
