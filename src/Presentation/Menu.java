@@ -611,6 +611,22 @@ public class Menu {
         }
     }
 
+    public void attackBoss(Monster attacker, int damageAttack, Party party, int mult) {
+        List<String> characters = new ArrayList<>();
+        for (Character character : party.getPersonatges()){
+            characters.add(character.getNomPersonatge());
+        }
+        if(mult ==  0){
+            System.out.println("\n" + attacker.getName() + " attacks " + listToString(characters) + ".");
+            System.out.println("Fails and deals " + damageAttack + " " + attacker.getDamageType().toLowerCase() + " damage.");
+        } else if (mult == 2) {
+            System.out.println("\n" + attacker.getName() + " attacks " + listToString(characters) + ".");
+            System.out.println("Critical hit and deals " + damageAttack + " " + attacker.getDamageType().toLowerCase() + " damage.");
+        }else{
+            System.out.println("\n" + attacker.getName() + " attacks " + listToString(characters) + ".");
+            System.out.println("Hits and deals " + damageAttack + " " + attacker.getDamageType().toLowerCase() + " damage.");
+        }
+    }
     public void lastMessage(boolean cDead, boolean mDead, String name) {
         if(cDead){
             promptTavernKeeper();
@@ -624,6 +640,10 @@ public class Menu {
 
     public void dieCharacter(String nomPersonatge) {
         System.out.println(nomPersonatge + " falls unconscious.");
+    }
+
+    public void charactersDead(List<String> characters) {
+        System.out.println(listToString(characters) + " falls unconscious.");
     }
 
     public void dieMonster(String s) {

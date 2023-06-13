@@ -149,8 +149,8 @@ public class CombatManager {
     /**
      * Function to calculate the initiative value of the adventurer
      *
-     * @param spirit           spirit stat
-     * @param characterManager
+     * @param character character to calculate the initiative
+     * @param characterManager characterManager
      * @return initiative value
      */
     public int calculateIniative(Character character, CharacterManager characterManager) {
@@ -393,16 +393,12 @@ public class CombatManager {
         return character;
     }
 
-    public Party makeRestStage(CharacterManager characterManager, Character character,Party party,int m) {
-        int heal = characterManager.getSpecificCharacter(character).specificRestStage(character,characterManager);
+    public Party makeRestStage(int heal, Character character,Party party,int m) {
         if(Objects.equals(character.getTipusPersonatge(), "paladin")){
-            System.out.println("gfdgd" + heal);
-            character.setValueRestStage(heal);
             for(int i = 0;i<party.getPersonatges().length;i++){
                 party.getPersonatges()[i].setActualLifePoints(party.getPersonatges()[i].getActualLifePoints() + heal);
             }
         }else{
-            character.setValueRestStage(heal);
             party.getPersonatges()[m].setActualLifePoints(party.getPersonatges()[m].getActualLifePoints() + heal);
 
         }
@@ -410,4 +406,12 @@ public class CombatManager {
         return party;
     }
 
+    public int getHealRestStage(CharacterManager characterManager, Character character) {
+        int heal = characterManager.getSpecificCharacter(character).specificRestStage(character, characterManager);
+        return heal;
+    }
+
+    public boolean isBoss(Monster attacker) {
+        return attacker.getChallenge().equals("Boss");
+    }
 }

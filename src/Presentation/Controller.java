@@ -259,12 +259,13 @@ public class Controller {
             menu.gainXp(numberXp,character,levelUp);
         }
         menu.nextLine();
+
         for(int m = 0;m< party.getPersonatges().length;m++){
             Character character = party.getPersonatges()[m];
             if (character.getActualLifePoints() > 0){
-                party = combatManager.makeRestStage(characterManager,character,party,m);
-                System.out.println("fsdfs " + characterManager.getSpecificCharacter(party.getPersonatges()[m]).valueRestStage());
-                menu.makeCuracio(character,party,characterManager.getSpecificCharacter(party.getPersonatges()[m]).valueRestStage());
+                int heal = combatManager.getHealRestStage(characterManager,character);
+                party = combatManager.makeRestStage(heal,character,party,m);
+                menu.makeCuracio(character,party,heal);
             }else{
                 menu.makeCuracioDead(character.getNomPersonatge());
             }
@@ -286,18 +287,33 @@ public class Controller {
             Monster attacker = combatManager.getMonsterByName(combatManager.getAllParticipants().get(j));
             int damageAttack = combatManager.calculateMonsterAttack(attacker) * mult;
             int indexOpponent;
-            do{
-                indexOpponent = combatManager.randomAttack(party.getPersonatges().length) - 1;
-            }while(party.getPersonatges()[indexOpponent].getActualLifePoints() == 0);
-            if(party.getPersonatges()[indexOpponent].getShield() > 0){
-                party.getPersonatges()[indexOpponent].setShield(party.getPersonatges()[indexOpponent].getShield() - damageAttack);
+            if(combatManager.isBoss(attacker)){
+                List<String> characterDead = new ArrayList<>();
+                for (Character character : party.getPersonatges()){
+                    character.setActualLifePoints(character.getActualLifePoints() - damageAttack);
+                    if(character.getActualLifePoints() <= 0){
+                        character.setActualLifePoints(0);
+                        characterDead.add(character.getNomPersonatge());
+                    }
+                }
+                 menu.attackBoss(attacker,damageAttack,party,mult);
+                if(!characterDead.isEmpty()){
+                    menu.charactersDead(characterDead);
+                }
             }else{
-                party.getPersonatges()[indexOpponent].setActualLifePoints(party.getPersonatges()[indexOpponent].getActualLifePoints()- damageAttack);
-            }
-            menu.makeAttackMonster(attacker, damageAttack,party.getPersonatges()[indexOpponent].getNomPersonatge(),mult,attacker.getDamageType());
-            if(party.getPersonatges()[indexOpponent].getActualLifePoints() <= 0){
-                party.getPersonatges()[indexOpponent].setActualLifePoints(0);
-                menu.dieCharacter(party.getPersonatges()[indexOpponent].getNomPersonatge());
+                do{
+                    indexOpponent = combatManager.randomAttack(party.getPersonatges().length) - 1;
+                }while(party.getPersonatges()[indexOpponent].getActualLifePoints() == 0);
+                if(party.getPersonatges()[indexOpponent].getShield() > 0){
+                    party.getPersonatges()[indexOpponent].setShield(party.getPersonatges()[indexOpponent].getShield() - damageAttack);
+                }else{
+                    party.getPersonatges()[indexOpponent].setActualLifePoints(party.getPersonatges()[indexOpponent].getActualLifePoints()- damageAttack);
+                }
+                menu.makeAttackMonster(attacker, damageAttack,party.getPersonatges()[indexOpponent].getNomPersonatge(),mult,attacker.getDamageType());
+                if(party.getPersonatges()[indexOpponent].getActualLifePoints() <= 0){
+                    party.getPersonatges()[indexOpponent].setActualLifePoints(0);
+                    menu.dieCharacter(party.getPersonatges()[indexOpponent].getNomPersonatge());
+                }
             }
         }
     }
@@ -310,7 +326,7 @@ public class Controller {
      * @param party party of the adventure
      * @param mult multiplier attack(1=normal,2=critic,0=fails).
      */
-    private void attackCharacter(Character attacker, CombatManager combatManager, CharacterManager characterManager, Party party, int mult) {
+    private void attackCharacter(Character attacker, CombatManager combatManager, CharacterManager characterManager, Party party, int mult) throws FileNotFoundException {
         if(combatManager.getActualLife(party,attacker) > 0){
             int damageAttack = characterManager.calculateAttack(attacker,party,combatManager.moreThan3Monsters(combatManager.getActualLifeMonsters())) * mult;
             String typeAttack = attacker.typeSpecificAttack();
@@ -373,7 +389,12 @@ public class Controller {
         menu.healOne(characterHealed.getNomPersonatge(),attacker,damageAttack);
     }
 
-    private void attackOneMonster(int indexOpponent, CombatManager combatManager, int damageAttack, Character attacker, int mult) {
+    private void attackOneMonster(int indexOpponent, CombatManager combatManager, int damageAttack, Character attacker, int mult) throws FileNotFoundException {
+        if(combatManager.isBoss(combatManager.getMonsterByName(combatManager.getOnlyMonsters().get(indexOpponent)))){
+            if(combatManager.getMonsterByName(combatManager.getOnlyMonsters().get(indexOpponent)).getDamageType().equals(attacker.typeOfDamage())){
+                damageAttack = damageAttack/2;
+            }
+        }
         combatManager.getActualLifeMonsters().set(indexOpponent,combatManager.getActualLifeMonsters().get(indexOpponent) - damageAttack);
         menu.makeAttack(attacker, damageAttack,combatManager.getOnlyMonsters().get(indexOpponent),mult);
         if(combatManager.getActualLifeMonsters().get(indexOpponent) <= 0){
